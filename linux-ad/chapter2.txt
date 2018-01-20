@@ -1,0 +1,33 @@
+Some networking basics:
+
+Understanding the TCP/IP protocol suite
+-> TCP/IP is a protocol suite made up of several individual protocols like TCP, IP, UDP. TCP is resposible for breaking down network transmissions into sequences(packets or segments), which are then send to the reciever. TCP also ensures that they are recieved properly via error correction. If a packet is not received by the target, TCP will send it. It knows to do this because of the retransmission timer.
+-> When setting up a connection, TCP performs a three-way handshake, which consist of sending SYN(s->r), then SYN/ACK(r->s) and finally ACK(s->r) indicating that the transfer is all set to proceed. The flow control feature of TCP handles the speed at which data is transferred. Flow control works by utilizing what is known as a sliding window. The receiving node specifies what is known as a receiving window, which tells the sender how much data it's able to receive before it becomes overwhelmed. Once this receiver window runs dry, the sender waits for the receiver to clarify that it is ready to receive data again. We have persist timer in place to help deal with if receive waits infinitly long time. Once the persist timer elapses, the sender transmit another packet to the receiver, to see whether it is able to deal with it. If a reply is sent, the reply packet will contain another receive window, which identifies that it is indeed ready to continue the conversation.
+
+-> IP handles the actual sending and receiving of the packets that TCP wants to send or receive. TCP splits up a communication into packets, and IP handles routing them to their destination.
+
+-> UDP, just like TCP, breaks up a transmission into packets. The main difference, however, is that UDP is connectionless. This means that UDP does not verify anything and does not guarantee delivery.
+
+Naming the network device
+-> Earlier ethx and wlanx was as naming convention but to overcome the crossing of name when device is rebooted we use systemd that has a built in naming scheme that is based on the position of the card in the system's bus.
+
+Linux hostname resolution
+-> DNS is not the first place that a linux host will look in order to resolve hostnames. There is a file saved locally on system( /etc/hosts ) that our machine will check first. If not found contact primary DNS server. The order of checking is saved in the file /etc/nsswitch.conf
+
+net-tools and iproute2
+-> net-tools has been the suite of tools used to manage network connections on linux systems. Since net-tools has not been updated by its developers in well over a decade, making many distribution opt to abandon it in favor of the iproute2.
+
+manually managing network interfaces
+-> The file /etc/network/interfaces is a configuration file which contains details about the network interface but if our network interfaces are managed by Network Manager then we won't be getting any details except about the lo interface. In case of static IP address our server receives a static lease from the DHCP server. With a static lease, the DHCP server will provide the same IP address for a particular MAC address each time. This is also known as DHCP reservation.
+			# The loopback network interface
+			auto lo
+			iface lo inet loopback
+			# Wired connection eth0
+			auto eth0
+			iface eth0 inet static
+			    address 10.10.10.12
+			    netmask 255.255.248.0
+			    network 10.10.10.0
+			    broadcast 10.10.10.255
+			    gateway 10.10.10.1
+For GUI based configuration all distribuations provide some Graphical agent but all of the provide a tool named nmtui for configuration.
